@@ -134,7 +134,7 @@ with tab_m1:
 
         m1_details = st.text_area("Ciri Fisik, Usia, Ekspresi & Pakaian:", "Wanita usia 25 tahun, rambut hitam sebahu, tatapan fokus percaya diri, blazer navy modern, pencahayaan studio lembut.", height=70)
         m1_files = st.file_uploader("📷 Unggah Foto Acuan Wajah Asli / Karakter (1-3 Foto):", type=["jpg", "png", "webp"], accept_multiple_files=True, key="m1_up")
-        btn_m1 = st.button("🚀 Kunci Karakter & Render Persona", use_container_width=True)
+        btn_m1 = st.button("🚀 Generate", key="btn_gen_m1", use_container_width=True)
 
 # MODUL 2: BRANDING & COMMERCIAL MOCKUP
 with tab_m2:
@@ -150,7 +150,7 @@ with tab_m2:
 
         m2_desc = st.text_area("Deskripsi Interaksi Model & Produk:", "Model wanita muda memegang botol cold brew kaca dengan senyum santai, latar belakang meja marmer dan tanaman hias.", height=70)
         m2_prod_file = st.file_uploader("📎 Unggah Logo Transparan (PNG) atau Foto Kemasan Produk:", type=["png", "jpg", "webp"], key="m2_up")
-        btn_m2 = st.button("🚀 Render Iklan Komersial & Mockup", use_container_width=True)
+        btn_m2 = st.button("🚀 Generate", key="btn_gen_m2", use_container_width=True)
 
 # MODUL 3: CULINARY & FOOD GEN
 with tab_m3:
@@ -166,7 +166,7 @@ with tab_m3:
 
         m3_details = st.text_area("Detail Visual (Uap Panas, Tekstur, Garnish, Piring/Meja):", "Kuah hitam pekat berkilau gurih, potongan daging empuk beruap panas, taburan tauge pendek renyah, sambal terasi dan telur asin di piring tembikar rustic meja kayu.", height=70)
         m3_sample = st.file_uploader("📎 Unggah Foto Referensi Sajian Asli (Opsional):", type=["png", "jpg", "webp"], key="m3_up")
-        btn_m3 = st.button("🚀 Render Foto Kuliner Komersial", use_container_width=True)
+        btn_m3 = st.button("🚀 Generate", key="btn_gen_m3", use_container_width=True)
 
 # MODUL 4: STORY VIDEO & FILM ENGINE
 with tab_m4:
@@ -182,9 +182,9 @@ with tab_m4:
 
         m4_premise = st.text_area("Premis Cerita / Naskah Adegan:", "Seorang guru muda yang menemukan metode mengajar interaktif baru untuk membangkitkan semangat siswanya yang sedang putus asa.", height=70)
         m4_ref_doc = st.file_uploader("📎 Unggah File Naskah / Kerangka Cerita (Word / PDF / Teks):", type=["docx", "txt", "pdf"], key="m4_up")
-        btn_m4 = st.button("🚀 Susun Breakdown Adegan, Visual & Prompt Kling/Runway", use_container_width=True)
+        btn_m4 = st.button("🚀 Generate", key="btn_gen_m4", use_container_width=True)
 
-# 6. Pemrosesan Logika Berdasarkan Modul yang Dipilih
+# 6. Pemrosesan Logika Berdasarkan Modul
 active_trigger = btn_m1 or btn_m2 or btn_m3 or btn_m4
 
 if active_trigger:
@@ -197,7 +197,6 @@ if active_trigger:
             st.session_state.res_text = ""
             st.session_state.ref_img_preview = None
 
-            # Setup Variabel Berdasarkan Tombol yang Ditekan
             if btn_m1:
                 st.session_state.active_module_name = f"Modul 1: Karakter {m1_name}"
                 target_ratio = "9:16" if "9:16" in m1_ratio else ("16:9" if "16:9" in m1_ratio else "1:1")
@@ -269,10 +268,10 @@ if active_trigger:
         except Exception as e:
             st.error(f"Gagal memproses alur kerja: {e}")
 
-# 7. Area Pratinjau Interaktif & Pusat Unduhan
+# 7. Area Preview & Pusat Unduhan
 st.divider()
 if st.session_state.res_img or st.session_state.res_text:
-    st.markdown(f"### 🎨 PRATINJAU HASIL: {st.session_state.active_module_name}")
+    st.markdown(f"### 🎨 PREVIEW: {st.session_state.active_module_name}")
 
     if st.session_state.ref_img_preview:
         with st.expander("📷 Lihat Aset Acuan yang Diunggah", expanded=False):
@@ -308,7 +307,7 @@ if st.session_state.res_img or st.session_state.res_text:
             )
 
     st.write("")
-    pv1, pv2, pv3 = st.tabs(["🖼️ Pratinjau Visual Render", "📱 Storyboard / Naskah Adegan", "✏️ Edit Naskah"])
+    pv1, pv2, pv3 = st.tabs(["🖼️ Preview Visual", "📱 Storyboard / Naskah Adegan", "✏️ Edit Naskah"])
 
     with pv1:
         if st.session_state.res_img:
@@ -342,7 +341,7 @@ if st.session_state.res_img or st.session_state.res_text:
 else:
     st.markdown("""
     <div class="preview-empty-box">
-        <h4>⚡ Area Pratinjau & Pascaproduksi</h4>
-        <p>Pilih salah satu dari 4 modul di atas, lengkapi parameter atau aset gambar, lalu tekan tombol jalankan. Hasil render visual resolusi tinggi dan naskah produksi siap unduh akan tampil di sini.</p>
+        <h4>⚡ Preview & Pascaproduksi</h4>
+        <p>Pilih salah satu dari 4 modul di atas, lengkapi parameter atau aset gambar, lalu klik tombol Generate. Hasil render visual resolusi tinggi dan naskah produksi siap unduh akan tampil di sini.</p>
     </div>
     """, unsafe_allow_html=True)
