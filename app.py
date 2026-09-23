@@ -223,7 +223,7 @@ with tab_m1:
             m1_style = st.selectbox(
                 "Gaya Visual:",
                 [
-                    "Photorealistic 8K Studio",
+                    "Photorealistic 8K Studio Portrait",
                     "High-Fashion Editorial",
                     "Cinematic Film Still (35mm)",
                     "3D Pixar Animation Style",
@@ -304,17 +304,16 @@ with tab_m3:
     with st.container(border=True):
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
-            m3_dish = st.text_input("Nama Hidangan / Minuman:", value="Coto makasssar legendaris", key="m3_dish_in")
+            m3_dish = st.text_input("Nama Hidangan / Minuman:", value="Coto Makassar Legendaris Daging Sapi", key="m3_dish_in")
         with col_f2:
             m3_angle = st.selectbox(
                 "Sudut Kamera (Angle):",
                 [
-                    "Top-Down / Flat Lay (90° Meja Penuh)",
-                    "Macro Extreme Close-Up (Tekstur & Kilau)",
-                    "45° Eye-Level Restoran Standar",
-                    "Side-Profile Hero Shot (Lapisan/Tinggi)",
-                    "Low-Angle Dramatic (Mewah & Menjulang)",
-                    "Dutch Tilt Cinematic Angle (Dinamis)"
+                    "Top-Down Flat Lay (90° overhead shot)",
+                    "Macro Extreme Close-Up on textures and garnish",
+                    "45-degree restaurant eye-level hero shot",
+                    "Side-profile depth of field shot",
+                    "Low-Angle dramatic commercial view"
                 ],
                 key="m3_a"
             )
@@ -332,7 +331,7 @@ with tab_m3:
 
         m3_details = st.text_area(
             "Detail Visual (Uap Panas, Garnish, Piring & Meja):",
-            "Semangkuk Coto Makassar autentik disajikan dalam mangkuk tanah liat tradisional rustic. Kuah kental berwarna cokelat tua gurih beraroma rempah pekat dengan kilau minyak kaldu alami di permukaan dan uap panas mengepul tipis. Potongan daging sapi empuk dan jeroan tertata padat, ditaburi irisan daun bawang segar, seledri cincang halus, serta bawang goreng renyah keemasan di atasnya. Di samping mangkuk terdapat separuh potongan jeruk nipis segar berbulir berkilau, sesendok sambal tauco merah pedas, dan ketupat anyaman daun kelapa yang terbelah rapi di atas tatakan meja kayu jati bernuansa hangat dengan pencahayaan studio komersial lembut.",
+            "Mangkuk berisi kuah kaldu rempah cokelat gurih dengan potongan daging sapi empuk, taburan daun bawang iris segar dan bawang goreng keemasan di atasnya. Di samping mangkuk ada irisan jeruk nipis segar berbulir, sambal tauco merah, dan potongan ketupat anyaman daun kelapa di atas meja kayu rustic bertekstur hangat dengan pencahayaan studio F&B profesional.",
             height=85,
             key="m3_details_in"
         )
@@ -398,7 +397,7 @@ if active_trigger:
             if btn_m1:
                 st.session_state.active_module_name = f"Modul 1: Karakter {m1_name}"
                 w_px, h_px, target_ratio = get_dimensions(m1_ratio)
-                img_prompt = f"Cinematic studio character portrait of {m1_name}, {m1_details}, visual style: {m1_style}, ultra detailed facial features, realistic skin texture, 8k resolution, identity preserved"
+                img_prompt_raw = f"High-end studio portrait of {m1_name}, {m1_details}, visual style: {m1_style}, ultra-realistic face, 8k resolution, cinematic lighting, masterpiece photography"
                 sys_inst = "Anda adalah Master Director & Pakar Prompt Karakter Konsisten. Rinci profil identitas karakter, formula prompt konsisten (Image-to-Image & Text-to-Video), serta seed guidelines."
                 analysis_prompt = f"Kunci profil karakter {m1_name} dengan gaya {m1_style}. Rasio: {m1_ratio}. Rincikan formula prompt konsisten lintas adegan dan panduan pose."
                 active_files = m1_files
@@ -406,7 +405,7 @@ if active_trigger:
             elif btn_m2:
                 st.session_state.active_module_name = f"Modul 2: Branding {m2_brand}"
                 w_px, h_px, target_ratio = get_dimensions(m2_ratio)
-                img_prompt = f"High-end commercial advertisement for {m2_brand}, {m2_desc}, aesthetic atmosphere: {m2_vibe}, studio lighting, clean composition, luxury product photography, 8k"
+                img_prompt_raw = f"Commercial product advertisement photograph for {m2_brand}, {m2_desc}, environment: {m2_vibe}, studio lighting, clean luxury composition, 8k commercial photography"
                 sys_inst = "Anda adalah Creative Advertising Director. Buat panduan eksekusi kampanye, penempatan logo/mockup tanpa distorsi, serta salinan copywriting iklan media sosial viral."
                 analysis_prompt = f"Susun kampanye iklan untuk brand {m2_brand}. Suasana: {m2_vibe}, Format: {m2_ratio}. Sertakan arahan penempatan logo, headline, caption medsos, dan prompt video iklan 15 detik."
                 active_files = [m2_prod_file] if m2_prod_file else []
@@ -414,7 +413,7 @@ if active_trigger:
             elif btn_m3:
                 st.session_state.active_module_name = f"Modul 3: Kuliner {m3_dish}"
                 w_px, h_px, target_ratio = get_dimensions(m3_ratio)
-                img_prompt = f"Commercial food photography of {m3_dish}, camera angle: {m3_angle}, {m3_details}, soft studio lighting, glistening appetizing textures, shallow depth of field, 8k resolution"
+                img_prompt_raw = f"Award-winning commercial food photography of Indonesian Coto Makassar beef soup in a traditional authentic clay bowl, tender beef pieces in rich spiced brown broth, garnished with fresh sliced spring onions and crispy fried shallots, side of lime wedges, sambal, ketupat rice cake on rustic dark wood table, camera angle: {m3_angle}, warm culinary softbox lighting, shallow depth of field, 8k resolution, appetizing, photorealistic Michelin dining"
                 sys_inst = "Anda adalah Food Stylist & Fotografer Kuliner Komersial Kelas Dunia. Buat deskripsi menu, narasi selera, serta formula prompt fotografi makro."
                 analysis_prompt = f"Rancang panduan visual dan narasi marketing untuk menu kuliner: {m3_dish}. Sudut kamera: {m3_angle}. Format: {m3_ratio}. Rincikan highlight uap, tekstur gurih, dan copywriting menggugah selera."
                 active_files = [m3_sample] if m3_sample else []
@@ -422,7 +421,7 @@ if active_trigger:
             else:
                 st.session_state.active_module_name = f"Modul 4: Film Engine ({m4_char})"
                 w_px, h_px, target_ratio = get_dimensions(m4_ratio)
-                img_prompt = f"Cinematic keyframe scene 1 for film, featuring {m4_char}, premise: {m4_premise}, mood genre: {m4_genre}, volumetric lighting, 24fps film aesthetic, master shot"
+                img_prompt_raw = f"Cinematic film keyframe featuring {m4_char}, premise: {m4_premise}, mood: {m4_genre}, 35mm lens, volumetric cinematic lighting, 24fps movie still, ultra realistic"
                 sys_inst = "Anda adalah Sutradara & Showrunner Serial Profesional. Lakukan script breakdown per adegan (Scene 1-4), naskah dialog TTS, instruksi kamera, serta prompt siap pakai untuk AI Video (Runway Gen-3 / Kling)."
                 analysis_prompt = f"Pecah premis ini menjadi naskah 3-4 adegan: {m4_premise}. Karakter: {m4_char}. Genre: {m4_genre}. Format Video: {m4_ratio}. Format output: Scene, Visual Frame, Voiceover/Dialog TTS, BGM/SFX, dan English Prompt siap salin untuk Kling/Luma."
                 active_files = [m4_ref_doc] if m4_ref_doc else []
@@ -441,7 +440,7 @@ if active_trigger:
                     elif f.name.lower().endswith('.txt'):
                         payload.append("\n--- DOKUMEN ACUAN ---\n" + fb.decode('utf-8', errors='ignore'))
 
-            with st.spinner("⚡ Engine sedang memproses teks dan merender visual langsung..."):
+            with st.spinner("⚡ Engine sedang merender teks dan visual presisi tinggi..."):
                 # A. Eksekusi Naskah dengan 5 Lapis Model Gemini Aktif
                 candidate_models = [
                     "gemini-1.5-flash-8b",
@@ -473,23 +472,23 @@ if active_trigger:
                 if not success:
                     st.error(f"⚠️ Seluruh 5 jalur model Gemini sedang sibuk: {last_error_msg}")
 
-                # B. Render Visual Otomatis (Imagen 3 dengan Fallback Mesin Visual Instan)
+                # B. Render Visual Presisi Tinggi (Imagen 3 -> Fallback Model Flux Photorealism)
                 try:
                     img_res = client.models.generate_images(
                         model='imagen-3.0-generate-002',
-                        prompt=img_prompt,
+                        prompt=img_prompt_raw,
                         config=types.GenerateImagesConfig(number_of_images=1, aspect_ratio=target_ratio)
                     )
                     if img_res and hasattr(img_res, 'generated_images'):
                         for g in img_res.generated_images:
                             st.session_state.res_img = g.image.image_bytes
                 except Exception:
-                    # Fallback ke Mesin Visual Instan beresolusi tinggi langsung via query prompt
+                    # Fallback ke Engine Flux dengan parameter photorealism
                     try:
-                        encoded_prompt = urllib.parse.quote(img_prompt)
-                        poll_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={w_px}&height={h_px}&nologo=true"
+                        encoded_prompt = urllib.parse.quote(img_prompt_raw)
+                        poll_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={w_px}&height={h_px}&model=flux-realism&nologo=true&enhance=true"
                         req = urllib.request.Request(poll_url, headers={'User-Agent': 'Mozilla/5.0'})
-                        with urllib.request.urlopen(req, timeout=15) as resp:
+                        with urllib.request.urlopen(req, timeout=20) as resp:
                             st.session_state.res_img = resp.read()
                     except Exception:
                         pass
@@ -538,14 +537,13 @@ if st.session_state.res_img or st.session_state.res_text:
             )
 
     st.write("")
-    # Tab Urutan Baru: Gambar ditaruh di tab pertama agar langsung terlihat
     pv1, pv2, pv3 = st.tabs(["🖼️ Preview Visual Langsung", "📱 Storyboard / Naskah Adegan", "✏️ Edit Naskah"])
 
     with pv1:
         if st.session_state.res_img:
             cv1, cv2 = st.columns([1.8, 1.2], gap="medium")
             with cv1:
-                st.image(st.session_state.res_img, caption="Keyframe Visual Siap Pakai", use_container_width=True)
+                st.image(st.session_state.res_img, caption="Keyframe Visual Presisi (Photorealistic)", use_container_width=True)
             with cv2:
                 st.markdown("#### 💾 Simpan Visual")
                 st.caption("Gambar resolusi tinggi siap diunggah atau dijadikan acuan Image-to-Video di Kling/Runway:")
