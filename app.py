@@ -2,6 +2,7 @@ import streamlit as st
 from google import genai
 from google.genai import types
 import io
+import time
 import docx
 from fpdf import FPDF
 
@@ -450,16 +451,15 @@ if active_trigger:
                         for g in img_res.generated_images:
                             st.session_state.res_img = g.image.image_bytes
                 except Exception:
-                    # Dilewati tanpa memicu crash jika mode Developer API aktif
                     pass
 
                 # B. Eksekusi Naskah dengan 5 Lapis Model Gemini (Dari Terkecil ke Terbarukan)
                 candidate_models = [
-                    "gemini-1.5-flash-8b",  # 1. Terkecil & paling hemat
+                    "gemini-1.5-flash-8b",  # 1. Paling ringan & hemat
                     "gemini-1.5-flash",     # 2. Standar stabil
-                    "gemini-1.5-pro",       # 3. Penalaran mendalam v1.5
-                    "gemini-2.0-flash",     # 4. Generasi v2.0
-                    "gemini-3.6-flash"      # 5. Generasi terbarukan
+                    "gemini-1.5-pro",       # 3. Penalaran mendalam
+                    "gemini-2.0-flash",     # 4. Multimodal v2.0
+                    "gemini-2.5-flash"      # 5. Terbarukan
                 ]
 
                 success = False
@@ -478,10 +478,11 @@ if active_trigger:
                             break
                     except Exception as err_layer:
                         last_error_msg = str(err_layer)
+                        time.sleep(1.5)  # Jeda sejenak untuk menghindari antrean sibuk (503)
                         continue
 
                 if not success:
-                    st.error(f"⚠️ Seluruh 5 jalur model Gemini gagal merespons: {last_error_msg}")
+                    st.error(f"⚠️ Seluruh 5 jalur model Gemini sedang mengalami antrean tinggi. Silakan coba kembali dalam beberapa saat: {last_error_msg}")
 
         except Exception as e:
             st.error(f"Gagal memproses alur kerja: {e}")
