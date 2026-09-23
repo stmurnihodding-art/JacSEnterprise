@@ -22,7 +22,6 @@ html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Judul Studio & Subjudul */
 .hero-title {
     font-family: 'Syne', sans-serif;
     font-size: clamp(1.6rem, 4.5vw, 2.4rem);
@@ -50,7 +49,6 @@ html, body, [class*="css"] {
     margin-bottom: 18px;
 }
 
-/* Tab Berbentuk Kapsul Modern */
 div[data-testid="stTabs"] button[role="tab"] {
     border-radius: 20px !important;
     padding: 8px 18px !important;
@@ -68,7 +66,6 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
     box-shadow: 0 0 12px rgba(0, 229, 255, 0.25) !important;
 }
 
-/* Kotak Formulir Modul Berbingkai Halus */
 div[data-testid="stVerticalBlockBorderWrapper"] {
     border: 1px solid rgba(0, 229, 255, 0.2) !important;
     border-radius: 14px !important;
@@ -78,7 +75,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Tombol Eksekusi Neon Menyala */
 .stButton > button {
     background: linear-gradient(90deg, #00e5ff 0%, #ff7b00 100%) !important;
     color: #050505 !important;
@@ -95,7 +91,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     box-shadow: 0 0 20px rgba(0, 229, 255, 0.5) !important;
 }
 
-/* Tombol Unduh File */
 div[data-testid="stDownloadButton"] > button {
     border-radius: 8px !important;
     font-weight: 700 !important;
@@ -103,7 +98,6 @@ div[data-testid="stDownloadButton"] > button {
     border: 1px solid rgba(0, 229, 255, 0.4) !important;
 }
 
-/* Kartu Preview Kosong */
 .preview-card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -164,6 +158,16 @@ if "ref_img_preview" not in st.session_state:
 if "active_module_name" not in st.session_state:
     st.session_state.active_module_name = "Character Gen"
 
+# Helper Aspek Rasio Aman untuk Imagen 3
+def map_aspect_ratio(raw_ratio_str):
+    if "9:16" in raw_ratio_str:
+        return "9:16"
+    elif "16:9" in raw_ratio_str or "21:9" in raw_ratio_str:
+        return "16:9"
+    elif "4:5" in raw_ratio_str or "3:4" in raw_ratio_str:
+        return "4:3" if "3:4" in raw_ratio_str else "1:1"
+    return "1:1"
+
 # Generator Unduhan Berkas
 def generate_docx(content_text, title="Naskah Produksi AI Studio"):
     doc = docx.Document()
@@ -189,7 +193,7 @@ def generate_pdf(content_text, title="Naskah Produksi AI Studio"):
             pdf.ln(1)
     return bytes(pdf.output())
 
-# 5. Tab Pemilihan Modul (Ringkas & Terorganisir)
+# 5. Tab Pemilihan Modul dengan Fitur Lengkap
 tab_m1, tab_m2, tab_m3, tab_m4 = st.tabs([
     "👤 Karakter Konsisten",
     "🏷️ Branding & Mockup",
@@ -202,13 +206,50 @@ with tab_m1:
     with st.container(border=True):
         col_c1, col_c2, col_c3 = st.columns(3)
         with col_c1:
-            m1_name = st.text_input("Nama / ID Karakter:", value="Rina_Protagonist")
-        with col_c2:
-            m1_style = st.selectbox("Gaya Visual:", ["Photorealistic 8K", "Cinematic Film Still", "3D Pixar Animation", "Vintage Retro"], key="m1_s")
-        with col_c3:
-            m1_ratio = st.selectbox("Rasio Layar:", ["9:16 (Vertikal)", "1:1 (Persegi)", "16:9 (Landscape)"], key="m1_r")
+            char_preset = st.selectbox(
+                "Pilih / Buat Profil Karakter:",
+                ["Rina_Protagonist (Wanita Muda)", "Kenji_Explorer (Pria Petualang)", "Maya_Creator (Kreator Digital)", "Budi_Teacher (Guru Inspiratif)", "Kakek_Aris (Sesepuh Bijak)", "Kustom Nama / ID Sendiri..."],
+                key="m1_char_preset"
+            )
+            if "Kustom" in char_preset:
+                m1_name = st.text_input("Ketik Nama ID Baru:", value="Karakter_Saya", key="m1_custom_id")
+            else:
+                m1_name = char_preset.split(" ")[0]
 
-        m1_details = st.text_area("Ciri Fisik, Usia, Ekspresi & Busana:", "Wanita usia 25 tahun, rambut hitam sebahu, tatapan fokus percaya diri, blazer navy modern, pencahayaan studio lembut.", height=70)
+        with col_c2:
+            m1_style = st.selectbox(
+                "Gaya Visual:",
+                [
+                    "Photorealistic 8K Studio",
+                    "High-Fashion Editorial",
+                    "Cinematic Film Still (35mm)",
+                    "3D Pixar Animation Style",
+                    "Makoto Shinkai Anime Aesthetic",
+                    "Cyberpunk Neo-Tokyo",
+                    "Vintage 90s Polaroid Grain",
+                    "Renaissance Oil Painting"
+                ],
+                key="m1_s"
+            )
+        with col_c3:
+            m1_ratio = st.selectbox(
+                "Rasio Layar:",
+                [
+                    "9:16 (Vertikal - TikTok/Reels)",
+                    "1:1 (Persegi - Feed Instagram)",
+                    "4:5 (Portrait - Feed Medsos)",
+                    "16:9 (Landscape - YouTube/PC)",
+                    "3:4 (Portrait Klasik)"
+                ],
+                key="m1_r"
+            )
+
+        m1_details = st.text_area(
+            "Ciri Fisik, Usia, Ekspresi & Busana:",
+            "Wanita usia 25 tahun, rambut hitam sebahu, tatapan fokus percaya diri, blazer navy modern, pencahayaan studio lembut.",
+            height=70,
+            key="m1_details_in"
+        )
         m1_files = st.file_uploader("📷 Unggah Foto Acuan Wajah / Karakter (1-3 Foto):", type=["jpg", "png", "webp"], accept_multiple_files=True, key="m1_up")
         btn_m1 = st.button("🚀 Generate Karakter", key="btn_gen_m1", use_container_width=True)
 
@@ -217,13 +258,41 @@ with tab_m2:
     with st.container(border=True):
         col_b1, col_b2, col_b3 = st.columns(3)
         with col_b1:
-            m2_brand = st.text_input("Nama Brand & Tagline:", value="Kopi Senja - Aroma Otentik")
+            m2_brand = st.text_input("Nama Brand & Tagline:", value="Kopi Senja - Aroma Otentik", key="m2_brand_in")
         with col_b2:
-            m2_vibe = st.selectbox("Suasana Iklan:", ["Luxury Minimalist", "Modern Coffee Shop", "Outdoor Nature Adventure", "Neon Cyberpunk Cafe"], key="m2_v")
+            m2_vibe = st.selectbox(
+                "Suasana & Vibe Iklan:",
+                [
+                    "Luxury Minimalist Studio",
+                    "Aesthetic Korean Warm Cafe",
+                    "Modern Urban Co-working",
+                    "Tropical Nature & Outdoor Sunshine",
+                    "Cyberpunk Neon Night",
+                    "Clean Scandinavian Lifestyle",
+                    "Retro 80s Vintage Diner",
+                    "Vibrant Pop-Art Bold Colors"
+                ],
+                key="m2_v"
+            )
         with col_b3:
-            m2_ratio = st.selectbox("Format Kampanye:", ["9:16 (Story/TikTok)", "1:1 (Feed IG)", "16:9 (Banner Ad)"], key="m2_r")
+            m2_ratio = st.selectbox(
+                "Format Kampanye:",
+                [
+                    "9:16 (Story / TikTok / Reels Ad)",
+                    "1:1 (Feed Post Standar)",
+                    "4:5 (Instagram Portrait Boost)",
+                    "16:9 (Website Hero Banner / FB Ad)",
+                    "21:9 (Ultrawide Billboard / Display)"
+                ],
+                key="m2_r"
+            )
 
-        m2_desc = st.text_area("Interaksi Model & Produk:", "Model wanita muda memegang botol cold brew kaca dengan senyum santai, latar meja marmer dan tanaman hias.", height=70)
+        m2_desc = st.text_area(
+            "Interaksi Model & Produk:",
+            "Model wanita muda memegang botol cold brew kaca dengan senyum santai, latar meja marmer dan tanaman hias.",
+            height=70,
+            key="m2_desc_in"
+        )
         m2_prod_file = st.file_uploader("📎 Unggah Logo Transparan (PNG) / Kemasan Produk:", type=["png", "jpg", "webp"], key="m2_up")
         btn_m2 = st.button("🚀 Generate Mockup & Iklan", key="btn_gen_m2", use_container_width=True)
 
@@ -232,13 +301,38 @@ with tab_m3:
     with st.container(border=True):
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
-            m3_dish = st.text_input("Nama Hidangan:", value="Nasi Rawon Daging Sapi Premium")
+            m3_dish = st.text_input("Nama Hidangan / Minuman:", value="Nasi Rawon Daging Sapi Premium", key="m3_dish_in")
         with col_f2:
-            m3_angle = st.selectbox("Sudut Kamera:", ["Top-Down / Flat Lay (90°)", "Macro Close-Up (Tekstur)", "45° Eye-Level Resto", "Side-Profile Hero Shot"], key="m3_a")
+            m3_angle = st.selectbox(
+                "Sudut Kamera (Angle):",
+                [
+                    "Top-Down / Flat Lay (90° Meja Penuh)",
+                    "Macro Extreme Close-Up (Tekstur & Kilau)",
+                    "45° Eye-Level Restoran Standar",
+                    "Side-Profile Hero Shot (Lapisan/Tinggi)",
+                    "Low-Angle Dramatic (Mewah & Menjulang)",
+                    "Dutch Tilt Cinematic Angle (Dinamis)"
+                ],
+                key="m3_a"
+            )
         with col_f3:
-            m3_ratio = st.selectbox("Rasio Foto:", ["1:1 (Feed Katalog)", "9:16 (Reels/TikTok)", "16:9 (Banner Web)"], key="m3_r")
+            m3_ratio = st.selectbox(
+                "Rasio Foto:",
+                [
+                    "1:1 (Katalog Menu / Feed IG)",
+                    "4:5 (Portrait Feed Instagram)",
+                    "9:16 (Story / Reels / TikTok F&B)",
+                    "16:9 (Website Header / Banner Resto)"
+                ],
+                key="m3_r"
+            )
 
-        m3_details = st.text_area("Detail Visual (Uap Panas, Garnish, Piring & Meja):", "Kuah hitam pekat berkilau gurih, potongan daging empuk beruap panas, taburan tauge renyah, piring tembikar rustic meja kayu.", height=70)
+        m3_details = st.text_area(
+            "Detail Visual (Uap Panas, Garnish, Piring & Meja):",
+            "Kuah hitam pekat berkilau gurih, potongan daging empuk beruap panas, taburan tauge renyah, piring tembikar rustic meja kayu.",
+            height=70,
+            key="m3_details_in"
+        )
         m3_sample = st.file_uploader("📎 Unggah Foto Referensi Hidangan (Opsional):", type=["png", "jpg", "webp"], key="m3_up")
         btn_m3 = st.button("🚀 Generate Foto Kuliner", key="btn_gen_m3", use_container_width=True)
 
@@ -247,13 +341,41 @@ with tab_m4:
     with st.container(border=True):
         col_s1, col_s2, col_s3 = st.columns(3)
         with col_s1:
-            m4_char = st.text_input("Karakter Utama:", value="Rina_Protagonist")
+            m4_char = st.text_input("Karakter Utama:", value=m1_name, key="m4_char_in")
         with col_s2:
-            m4_genre = st.selectbox("Genre / Nuansa:", ["Inspiratif & Emosional", "Komedi Situasi Ringan", "Thriller Sinematik", "Edukatif Dokumenter"], key="m4_g")
+            m4_genre = st.selectbox(
+                "Genre & Nuansa Film:",
+                [
+                    "Inspiratif & Emosional",
+                    "Komedi Situasi Hangat & Ringan",
+                    "Thriller & Aksi Sinematik",
+                    "Dokumenter Realistis & Alam",
+                    "Sci-Fi & Cyberpunk Futuristik",
+                    "Romansa Puitis Senja",
+                    "Misteri & Horor Psikologis",
+                    "Iklan Naratif Komersial Cepat"
+                ],
+                key="m4_g"
+            )
         with col_s3:
-            m4_ratio = st.selectbox("Format Video:", ["9:16 (TikTok/Reels)", "16:9 (YouTube/Film)"], key="m4_r")
+            m4_ratio = st.selectbox(
+                "Format Video:",
+                [
+                    "9:16 (TikTok / Instagram Reels / Shorts)",
+                    "16:9 (YouTube Standard / Bioskop)",
+                    "1:1 (Instagram Feed Video)",
+                    "4:5 (Medsos In-Feed Video)",
+                    "21:9 (Anamorphic Cinema Scope)"
+                ],
+                key="m4_r"
+            )
 
-        m4_premise = st.text_area("Premis Cerita / Naskah Adegan:", "Seorang guru muda yang menemukan metode mengajar interaktif baru untuk membangkitkan semangat siswanya yang sedang putus asa.", height=70)
+        m4_premise = st.text_area(
+            "Premis Cerita / Naskah Adegan:",
+            "Seorang guru muda yang menemukan metode mengajar interaktif baru untuk membangkitkan semangat siswanya yang sedang putus asa.",
+            height=70,
+            key="m4_premise_in"
+        )
         m4_ref_doc = st.file_uploader("📎 Unggah File Naskah (Word / PDF / Teks):", type=["docx", "txt", "pdf"], key="m4_up")
         btn_m4 = st.button("🚀 Generate Story Video", key="btn_gen_m4", use_container_width=True)
 
@@ -272,34 +394,34 @@ if active_trigger:
 
             if btn_m1:
                 st.session_state.active_module_name = f"Modul 1: Karakter {m1_name}"
-                target_ratio = "9:16" if "9:16" in m1_ratio else ("16:9" if "16:9" in m1_ratio else "1:1")
-                img_prompt = f"Cinematic studio character portrait of {m1_name}, {m1_details}, style: {m1_style}, ultra detailed facial features, realistic skin texture, 8k resolution, identity preserved"
-                sys_inst = "Anda adalah Master Director & Pakar Prompt Karakter Konsisten. Rinci profil identitas karakter, rumus prompt text-to-image konsisten, serta seed guidelines."
-                analysis_prompt = f"Kunci profil karakter {m1_name} dengan gaya {m1_style}. Rincikan formula prompt konsisten (Image-to-Image & Text-to-Video) dan panduan pose untuk adegan berikutnya."
+                target_ratio = map_aspect_ratio(m1_ratio)
+                img_prompt = f"Cinematic studio character portrait of {m1_name}, {m1_details}, visual style: {m1_style}, ultra detailed facial features, realistic skin texture, 8k resolution, identity preserved"
+                sys_inst = "Anda adalah Master Director & Pakar Prompt Karakter Konsisten. Rinci profil identitas karakter, formula prompt konsisten (Image-to-Image & Text-to-Video), serta seed guidelines."
+                analysis_prompt = f"Kunci profil karakter {m1_name} dengan gaya {m1_style}. Rasio: {m1_ratio}. Rincikan formula prompt konsisten lintas adegan dan panduan pose."
                 active_files = m1_files
 
             elif btn_m2:
                 st.session_state.active_module_name = f"Modul 2: Branding {m2_brand}"
-                target_ratio = "9:16" if "9:16" in m2_ratio else ("16:9" if "16:9" in m2_ratio else "1:1")
-                img_prompt = f"High-end commercial advertisement for {m2_brand}, {m2_desc}, aesthetic: {m2_vibe}, studio lighting, clean composition, luxury product photography, 8k"
-                sys_inst = "Anda adalah Creative Advertising Director. Buat panduan eksekusi kampanye, penempatan logo/mockup, serta salinan copywriting iklan media sosial viral."
-                analysis_prompt = f"Susun rencana iklan komersial untuk brand {m2_brand}. Sertakan arahan layer penempatan logo, headline iklan, caption medsos, dan prompt video komersial 15 detik."
+                target_ratio = map_aspect_ratio(m2_ratio)
+                img_prompt = f"High-end commercial advertisement for {m2_brand}, {m2_desc}, aesthetic atmosphere: {m2_vibe}, studio lighting, clean composition, luxury product photography, 8k"
+                sys_inst = "Anda adalah Creative Advertising Director. Buat panduan eksekusi kampanye, penempatan logo/mockup tanpa distorsi, serta salinan copywriting iklan media sosial viral."
+                analysis_prompt = f"Susun kampanye iklan untuk brand {m2_brand}. Suasana: {m2_vibe}, Format: {m2_ratio}. Sertakan arahan penempatan logo, headline, caption medsos, dan prompt video iklan 15 detik."
                 active_files = [m2_prod_file] if m2_prod_file else []
 
             elif btn_m3:
                 st.session_state.active_module_name = f"Modul 3: Kuliner {m3_dish}"
-                target_ratio = "1:1" if "1:1" in m3_ratio else ("9:16" if "9:16" in m3_ratio else "16:9")
+                target_ratio = map_aspect_ratio(m3_ratio)
                 img_prompt = f"Commercial food photography of {m3_dish}, camera angle: {m3_angle}, {m3_details}, soft studio lighting, glistening appetizing textures, shallow depth of field, 8k resolution"
                 sys_inst = "Anda adalah Food Stylist & Fotografer Kuliner Komersial Kelas Dunia. Buat deskripsi menu, narasi selera, serta formula prompt fotografi makro."
-                analysis_prompt = f"Rancang panduan visual dan narasi marketing untuk menu kuliner: {m3_dish}. Sudut: {m3_angle}. Rincikan highlight uap, tekstur, dan copywriting menggugah selera."
+                analysis_prompt = f"Rancang panduan visual dan narasi marketing untuk menu kuliner: {m3_dish}. Sudut kamera: {m3_angle}. Format: {m3_ratio}. Rincikan highlight uap, tekstur gurih, dan copywriting menggugah selera."
                 active_files = [m3_sample] if m3_sample else []
 
             else:
                 st.session_state.active_module_name = f"Modul 4: Film Engine ({m4_char})"
-                target_ratio = "9:16" if "9:16" in m4_ratio else "16:9"
-                img_prompt = f"Cinematic keyframe scene 1 for film, featuring {m4_char}, premise: {m4_premise}, mood: {m4_genre}, volumetric lighting, 24fps film aesthetic, master shot"
+                target_ratio = map_aspect_ratio(m4_ratio)
+                img_prompt = f"Cinematic keyframe scene 1 for film, featuring {m4_char}, premise: {m4_premise}, mood genre: {m4_genre}, volumetric lighting, 24fps film aesthetic, master shot"
                 sys_inst = "Anda adalah Sutradara & Showrunner Serial Profesional. Lakukan script breakdown per adegan (Scene 1-4), naskah dialog TTS, instruksi kamera, serta prompt siap pakai untuk AI Video (Runway Gen-3 / Kling)."
-                analysis_prompt = f"Pecah premis ini menjadi naskah 3-4 adegan: {m4_premise}. Karakter: {m4_char}. Genre: {m4_genre}. Format: Scene, Visual Frame, Voiceover/Dialog TTS, BGM/SFX, dan English Prompt siap salin untuk Kling/Luma."
+                analysis_prompt = f"Pecah premis ini menjadi naskah 3-4 adegan: {m4_premise}. Karakter: {m4_char}. Genre: {m4_genre}. Format Video: {m4_ratio}. Format output: Scene, Visual Frame, Voiceover/Dialog TTS, BGM/SFX, dan English Prompt siap salin untuk Kling/Luma."
                 active_files = [m4_ref_doc] if m4_ref_doc else []
 
             # Siapkan Payload
@@ -423,19 +545,19 @@ else:
         <div class="preview-card-grid">
             <div class="preview-mini-card">
                 <h5>👤 Karakter</h5>
-                <p>Kunci persona konsisten & ekstraksi wajah.</p>
+                <p>Preset profil persona & 8 variasi seni visual.</p>
             </div>
             <div class="preview-mini-card">
                 <h5>🏷️ Branding</h5>
-                <p>Mockup produk & kampanye iklan model.</p>
+                <p>Mockup produk, 8 vibe iklan & format kampanye.</p>
             </div>
             <div class="preview-mini-card">
                 <h5>🍜 Kuliner</h5>
-                <p>Foto menu komersial & tekstur makro.</p>
+                <p>Foto menu komersial, 6 sudut kamera & rasio katalog.</p>
             </div>
             <div class="preview-mini-card">
                 <h5>🎥 Story Video</h5>
-                <p>Breakdown multi-adegan & prompt Kling/Runway.</p>
+                <p>8 genre naratif & format video bioskop/medsos.</p>
             </div>
         </div>
     </div>
