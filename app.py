@@ -453,13 +453,13 @@ if active_trigger:
                 except Exception:
                     pass
 
-                # B. Eksekusi Naskah dengan 5 Lapis Model Gemini (Dari Terkecil ke Terbarukan)
+                # B. Eksekusi Naskah dengan 5 Lapis Model Gemini Aktif (Dari Terkecil ke Terbarukan)
                 candidate_models = [
                     "gemini-1.5-flash-8b",  # 1. Paling ringan & hemat
                     "gemini-1.5-flash",     # 2. Standar stabil
                     "gemini-1.5-pro",       # 3. Penalaran mendalam
                     "gemini-2.0-flash",     # 4. Multimodal v2.0
-                    "gemini-2.5-flash"      # 5. Terbarukan
+                    "gemini-3.6-flash"      # 5. Generasi terbarukan
                 ]
 
                 success = False
@@ -478,11 +478,11 @@ if active_trigger:
                             break
                     except Exception as err_layer:
                         last_error_msg = str(err_layer)
-                        time.sleep(1.5)  # Jeda sejenak untuk menghindari antrean sibuk (503)
+                        time.sleep(1.0)
                         continue
 
                 if not success:
-                    st.error(f"⚠️ Seluruh 5 jalur model Gemini sedang mengalami antrean tinggi. Silakan coba kembali dalam beberapa saat: {last_error_msg}")
+                    st.error(f"⚠️ Seluruh 5 jalur model Gemini sedang sibuk. Silakan coba kembali: {last_error_msg}")
 
         except Exception as e:
             st.error(f"Gagal memproses alur kerja: {e}")
