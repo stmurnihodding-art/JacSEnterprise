@@ -13,65 +13,135 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. Styling UI Mobile & Desktop Responsif
+# 2. Desain UI Glassmorphism & Neon Studio Interaktif
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+
 html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
+
+/* Judul Studio & Subjudul */
 .hero-title {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    font-size: clamp(1.6rem, 4.5vw, 2.4rem);
     font-weight: 800;
-    background: linear-gradient(90deg, #00e5ff, #ff7b00);
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #00e5ff 0%, #7928ca 50%, #ff7b00 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 2px;
+    margin-bottom: 0px;
 }
 .hero-subtitle {
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    color: #94a3b8;
-    margin-top: 0px;
-    margin-bottom: 4px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-top: 2px;
+    margin-bottom: 8px;
 }
-.neon-bar {
-    height: 3px;
+.neon-divider {
+    height: 2px;
     width: 100%;
-    background: linear-gradient(90deg, #00e5ff 0%, #ff7b00 100%);
+    background: linear-gradient(90deg, #00e5ff 0%, rgba(121,40,202,0.8) 50%, transparent 100%);
     border-radius: 4px;
-    margin-top: 4px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
-.stButton > button, div[data-testid="stDownloadButton"] > button {
+
+/* Tab Berbentuk Kapsul Modern */
+div[data-testid="stTabs"] button[role="tab"] {
+    border-radius: 20px !important;
+    padding: 8px 18px !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-right: 8px !important;
+    transition: all 0.25s ease !important;
+}
+div[data-testid="stTabs"] button[aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(121, 40, 202, 0.25)) !important;
+    border: 1px solid #00e5ff !important;
+    color: #00e5ff !important;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.25) !important;
+}
+
+/* Kotak Formulir Modul Berbingkai Halus */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    border: 1px solid rgba(0, 229, 255, 0.2) !important;
+    border-radius: 14px !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(12px) !important;
+    padding: 16px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Tombol Eksekusi Neon Menyala */
+.stButton > button {
+    background: linear-gradient(90deg, #00e5ff 0%, #ff7b00 100%) !important;
+    color: #050505 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 800 !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.5px !important;
+    min-height: 48px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.5) !important;
+}
+
+/* Tombol Unduh File */
+div[data-testid="stDownloadButton"] > button {
     border-radius: 8px !important;
     font-weight: 700 !important;
     min-height: 44px !important;
+    border: 1px solid rgba(0, 229, 255, 0.4) !important;
 }
-.preview-empty-box {
-    border: 2px dashed rgba(0, 229, 255, 0.35);
-    border-radius: 10px;
-    padding: 30px 15px;
-    text-align: center;
-    color: #94a3b8;
+
+/* Kartu Preview Kosong */
+.preview-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+.preview-mini-card {
     background: rgba(255, 255, 255, 0.02);
-    margin-top: 10px;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
 }
+.preview-mini-card h5 {
+    color: #00e5ff;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+.preview-mini-card p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
 @media (max-width: 768px) {
     .block-container {
-        padding-top: 1.2rem !important;
-        padding-left: 0.8rem !important;
-        padding-right: 0.8rem !important;
+        padding-top: 1rem !important;
+        padding-left: 0.6rem !important;
+        padding-right: 0.6rem !important;
     }
 }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Header Studio Baru
+# 3. Header Studio
 st.markdown('<div class="hero-title">🎬 JacS AI CREATIVE</div>', unsafe_allow_html=True)
-st.markdown('<div class="hero-subtitle">Workspace Image & Video</div>', unsafe_allow_html=True)
-st.markdown('<div class="neon-bar"></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-subtitle">Workspace Image & Video Engine</div>', unsafe_allow_html=True)
+st.markdown('<div class="neon-divider"></div>', unsafe_allow_html=True)
 
 # 4. Pengaturan API Key (Sidebar)
 with st.sidebar:
@@ -119,79 +189,75 @@ def generate_pdf(content_text, title="Naskah Produksi AI Studio"):
             pdf.ln(1)
     return bytes(pdf.output())
 
-# 5. Tab Pemilihan 4 Modul Alur Kerja
+# 5. Tab Pemilihan Modul (Ringkas & Terorganisir)
 tab_m1, tab_m2, tab_m3, tab_m4 = st.tabs([
-    "👤 Modul 1: Karakter Konsisten",
-    "🏷️ Modul 2: Branding & Mockup",
-    "🍜 Modul 3: Kuliner & Food Gen",
-    "🎥 Modul 4: Story Video & Film Engine"
+    "👤 Karakter Konsisten",
+    "🏷️ Branding & Mockup",
+    "🍜 Kuliner & Food",
+    "🎥 Story Video & Film"
 ])
 
 # MODUL 1: CHARACTER GEN
 with tab_m1:
     with st.container(border=True):
-        st.markdown("##### 👤 Modul 1: Consistent Persona & Face Embedding")
         col_c1, col_c2, col_c3 = st.columns(3)
         with col_c1:
             m1_name = st.text_input("Nama / ID Karakter:", value="Rina_Protagonist")
         with col_c2:
-            m1_style = st.selectbox("Gaya Seni:", ["Photorealistic 8K", "Cinematic Film Still", "3D Pixar Animation", "Vintage Retro"], key="m1_s")
+            m1_style = st.selectbox("Gaya Visual:", ["Photorealistic 8K", "Cinematic Film Still", "3D Pixar Animation", "Vintage Retro"], key="m1_s")
         with col_c3:
-            m1_ratio = st.selectbox("Rasio Frame:", ["9:16 (Vertikal)", "1:1 (Persegi)", "16:9 (Landscape)"], key="m1_r")
+            m1_ratio = st.selectbox("Rasio Layar:", ["9:16 (Vertikal)", "1:1 (Persegi)", "16:9 (Landscape)"], key="m1_r")
 
-        m1_details = st.text_area("Ciri Fisik, Usia, Ekspresi & Pakaian:", "Wanita usia 25 tahun, rambut hitam sebahu, tatapan fokus percaya diri, blazer navy modern, pencahayaan studio lembut.", height=70)
-        m1_files = st.file_uploader("📷 Unggah Foto Acuan Wajah Asli / Karakter (1-3 Foto):", type=["jpg", "png", "webp"], accept_multiple_files=True, key="m1_up")
-        btn_m1 = st.button("🚀 Generate", key="btn_gen_m1", use_container_width=True)
+        m1_details = st.text_area("Ciri Fisik, Usia, Ekspresi & Busana:", "Wanita usia 25 tahun, rambut hitam sebahu, tatapan fokus percaya diri, blazer navy modern, pencahayaan studio lembut.", height=70)
+        m1_files = st.file_uploader("📷 Unggah Foto Acuan Wajah / Karakter (1-3 Foto):", type=["jpg", "png", "webp"], accept_multiple_files=True, key="m1_up")
+        btn_m1 = st.button("🚀 Generate Karakter", key="btn_gen_m1", use_container_width=True)
 
-# MODUL 2: BRANDING & COMMERCIAL MOCKUP
+# MODUL 2: BRANDING & MOCKUP
 with tab_m2:
     with st.container(border=True):
-        st.markdown("##### 🏷️ Modul 2: Commercial Mockup & Model Ads")
         col_b1, col_b2, col_b3 = st.columns(3)
         with col_b1:
             m2_brand = st.text_input("Nama Brand & Tagline:", value="Kopi Senja - Aroma Otentik")
         with col_b2:
-            m2_vibe = st.selectbox("Vibe / Suasana Iklan:", ["Luxury Minimalist", "Modern Coffee Shop", "Outdoor Nature Adventure", "Neon Cyberpunk Cafe"], key="m2_v")
+            m2_vibe = st.selectbox("Suasana Iklan:", ["Luxury Minimalist", "Modern Coffee Shop", "Outdoor Nature Adventure", "Neon Cyberpunk Cafe"], key="m2_v")
         with col_b3:
             m2_ratio = st.selectbox("Format Kampanye:", ["9:16 (Story/TikTok)", "1:1 (Feed IG)", "16:9 (Banner Ad)"], key="m2_r")
 
-        m2_desc = st.text_area("Deskripsi Interaksi Model & Produk:", "Model wanita muda memegang botol cold brew kaca dengan senyum santai, latar belakang meja marmer dan tanaman hias.", height=70)
-        m2_prod_file = st.file_uploader("📎 Unggah Logo Transparan (PNG) atau Foto Kemasan Produk:", type=["png", "jpg", "webp"], key="m2_up")
-        btn_m2 = st.button("🚀 Generate", key="btn_gen_m2", use_container_width=True)
+        m2_desc = st.text_area("Interaksi Model & Produk:", "Model wanita muda memegang botol cold brew kaca dengan senyum santai, latar meja marmer dan tanaman hias.", height=70)
+        m2_prod_file = st.file_uploader("📎 Unggah Logo Transparan (PNG) / Kemasan Produk:", type=["png", "jpg", "webp"], key="m2_up")
+        btn_m2 = st.button("🚀 Generate Mockup & Iklan", key="btn_gen_m2", use_container_width=True)
 
-# MODUL 3: CULINARY & FOOD GEN
+# MODUL 3: KULINER & FOOD GEN
 with tab_m3:
     with st.container(border=True):
-        st.markdown("##### 🍜 Modul 3: High-End Food & Beverage Photography")
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
-            m3_dish = st.text_input("Nama Menu Hidangan:", value="Nasi Rawon Daging Sapi Premium")
+            m3_dish = st.text_input("Nama Hidangan:", value="Nasi Rawon Daging Sapi Premium")
         with col_f2:
             m3_angle = st.selectbox("Sudut Kamera:", ["Top-Down / Flat Lay (90°)", "Macro Close-Up (Tekstur)", "45° Eye-Level Resto", "Side-Profile Hero Shot"], key="m3_a")
         with col_f3:
-            m3_ratio = st.selectbox("Rasio Foto Menu:", ["1:1 (Feed Katalog)", "9:16 (Reels/TikTok)", "16:9 (Website Banner)"], key="m3_r")
+            m3_ratio = st.selectbox("Rasio Foto:", ["1:1 (Feed Katalog)", "9:16 (Reels/TikTok)", "16:9 (Banner Web)"], key="m3_r")
 
-        m3_details = st.text_area("Detail Visual (Uap Panas, Tekstur, Garnish, Piring/Meja):", "Kuah hitam pekat berkilau gurih, potongan daging empuk beruap panas, taburan tauge pendek renyah, sambal terasi dan telur asin di piring tembikar rustic meja kayu.", height=70)
-        m3_sample = st.file_uploader("📎 Unggah Foto Referensi Sajian Asli (Opsional):", type=["png", "jpg", "webp"], key="m3_up")
-        btn_m3 = st.button("🚀 Generate", key="btn_gen_m3", use_container_width=True)
+        m3_details = st.text_area("Detail Visual (Uap Panas, Garnish, Piring & Meja):", "Kuah hitam pekat berkilau gurih, potongan daging empuk beruap panas, taburan tauge renyah, piring tembikar rustic meja kayu.", height=70)
+        m3_sample = st.file_uploader("📎 Unggah Foto Referensi Hidangan (Opsional):", type=["png", "jpg", "webp"], key="m3_up")
+        btn_m3 = st.button("🚀 Generate Foto Kuliner", key="btn_gen_m3", use_container_width=True)
 
 # MODUL 4: STORY VIDEO & FILM ENGINE
 with tab_m4:
     with st.container(border=True):
-        st.markdown("##### 🎥 Modul 4: Multi-Scene Story Video Engine")
         col_s1, col_s2, col_s3 = st.columns(3)
         with col_s1:
             m4_char = st.text_input("Karakter Utama:", value="Rina_Protagonist")
         with col_s2:
-            m4_genre = st.selectbox("Genre / Mood:", ["Inspiratif & Emosional", "Komedi Situasi Ringan", "Thriller / Aksi Sinematik", "Edukatif Dokumenter"], key="m4_g")
+            m4_genre = st.selectbox("Genre / Nuansa:", ["Inspiratif & Emosional", "Komedi Situasi Ringan", "Thriller Sinematik", "Edukatif Dokumenter"], key="m4_g")
         with col_s3:
-            m4_ratio = st.selectbox("Rasio Video:", ["9:16 (TikTok/Reels)", "16:9 (YouTube/Film)"], key="m4_r")
+            m4_ratio = st.selectbox("Format Video:", ["9:16 (TikTok/Reels)", "16:9 (YouTube/Film)"], key="m4_r")
 
         m4_premise = st.text_area("Premis Cerita / Naskah Adegan:", "Seorang guru muda yang menemukan metode mengajar interaktif baru untuk membangkitkan semangat siswanya yang sedang putus asa.", height=70)
-        m4_ref_doc = st.file_uploader("📎 Unggah File Naskah / Kerangka Cerita (Word / PDF / Teks):", type=["docx", "txt", "pdf"], key="m4_up")
-        btn_m4 = st.button("🚀 Generate", key="btn_gen_m4", use_container_width=True)
+        m4_ref_doc = st.file_uploader("📎 Unggah File Naskah (Word / PDF / Teks):", type=["docx", "txt", "pdf"], key="m4_up")
+        btn_m4 = st.button("🚀 Generate Story Video", key="btn_gen_m4", use_container_width=True)
 
-# 6. Pemrosesan Logika Berdasarkan Modul
+# 6. Pemrosesan Logika Engine
 active_trigger = btn_m1 or btn_m2 or btn_m3 or btn_m4
 
 if active_trigger:
@@ -236,7 +302,7 @@ if active_trigger:
                 analysis_prompt = f"Pecah premis ini menjadi naskah 3-4 adegan: {m4_premise}. Karakter: {m4_char}. Genre: {m4_genre}. Format: Scene, Visual Frame, Voiceover/Dialog TTS, BGM/SFX, dan English Prompt siap salin untuk Kling/Luma."
                 active_files = [m4_ref_doc] if m4_ref_doc else []
 
-            # Siapkan Payload Analisis
+            # Siapkan Payload
             payload = [analysis_prompt]
             for f in active_files:
                 if f is not None:
@@ -251,7 +317,7 @@ if active_trigger:
                         payload.append("\n--- DOKUMEN ACUAN ---\n" + fb.decode('utf-8', errors='ignore'))
 
             with st.spinner("⚡ Engine sedang merender visual keyframe dan menyusun rencana produksi..."):
-                # A. Render Keyframe Visual (Imagen 3)
+                # Render Gambar
                 try:
                     img_res = client.models.generate_images(
                         model='imagen-3.0-generate-002',
@@ -263,7 +329,7 @@ if active_trigger:
                 except Exception as img_err:
                     st.warning(f"Catatan visual render: {img_err}")
 
-                # B. Eksekusi Naskah & Prompt AI Video (Gemini 2.5 Flash)
+                # Render Naskah & Panduan
                 txt_res = client.models.generate_content(
                     model="gemini-2.5-flash",
                     contents=payload,
@@ -275,16 +341,18 @@ if active_trigger:
         except Exception as e:
             st.error(f"Gagal memproses alur kerja: {e}")
 
-# 7. Area Preview & Pusat Unduhan
-st.divider()
+# 7. Area Preview & Ekspor
+st.write("")
+st.markdown('<div class="neon-divider"></div>', unsafe_allow_html=True)
+
 if st.session_state.res_img or st.session_state.res_text:
-    st.markdown(f"### 🎨 PREVIEW: {st.session_state.active_module_name}")
+    st.markdown(f"### 🎨 PREVIEW HASIL: {st.session_state.active_module_name}")
 
     if st.session_state.ref_img_preview:
         with st.expander("📷 Lihat Aset Acuan yang Diunggah", expanded=False):
             st.image(st.session_state.ref_img_preview, width=260)
 
-    # Pusat Unduhan Naskah
+    # Pusat Unduh Naskah
     if st.session_state.res_text:
         st.markdown("##### 📥 Pusat Unduh Panduan & Naskah:")
         d1, d2, d3 = st.columns(3)
@@ -347,8 +415,28 @@ if st.session_state.res_img or st.session_state.res_text:
 
 else:
     st.markdown("""
-    <div class="preview-empty-box">
-        <h4>⚡ Preview & Pascaproduksi</h4>
-        <p>Pilih salah satu dari 4 modul di atas, lengkapi parameter atau aset gambar, lalu klik tombol Generate. Hasil render visual resolusi tinggi dan naskah produksi siap unduh akan tampil di sini.</p>
+    <div style="border: 1px dashed rgba(0, 229, 255, 0.3); border-radius: 12px; padding: 24px 16px; background: rgba(15, 23, 42, 0.3);">
+        <h4 style="color: #00e5ff; margin-bottom: 6px; text-align: center;">⚡ Preview & Pascaproduksi</h4>
+        <p style="text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">
+            Pilih salah satu dari 4 modul kreatif di atas, masukkan parameter atau aset visual, lalu klik tombol <b>Generate</b>.
+        </p>
+        <div class="preview-card-grid">
+            <div class="preview-mini-card">
+                <h5>👤 Karakter</h5>
+                <p>Kunci persona konsisten & ekstraksi wajah.</p>
+            </div>
+            <div class="preview-mini-card">
+                <h5>🏷️ Branding</h5>
+                <p>Mockup produk & kampanye iklan model.</p>
+            </div>
+            <div class="preview-mini-card">
+                <h5>🍜 Kuliner</h5>
+                <p>Foto menu komersial & tekstur makro.</p>
+            </div>
+            <div class="preview-mini-card">
+                <h5>🎥 Story Video</h5>
+                <p>Breakdown multi-adegan & prompt Kling/Runway.</p>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
