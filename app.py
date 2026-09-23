@@ -7,7 +7,7 @@ from fpdf import FPDF
 
 # 1. Konfigurasi Halaman & Tema Responsif
 st.set_page_config(
-    page_title="JacS All-in-One AI Creative Studio Engine",
+    page_title="JacS AI Creative - Workspace Image & Video",
     page_icon="🎬",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -28,6 +28,13 @@ html, body, [class*="css"] {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 2px;
+}
+.hero-subtitle {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-top: 0px;
+    margin-bottom: 4px;
 }
 .neon-bar {
     height: 3px;
@@ -61,9 +68,9 @@ html, body, [class*="css"] {
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Header Studio
-st.markdown('<div class="hero-title">🎬 JacS ALL-IN-ONE AI CREATIVE STUDIO ENGINE</div>', unsafe_allow_html=True)
-st.caption("Mesin Produksi Konten Terpadu: Konsistensi Karakter, Branding Mockup, Food Commercial, & Story Video")
+# 3. Header Studio Baru
+st.markdown('<div class="hero-title">🎬 JacS AI CREATIVE</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-subtitle">Workspace Image & Video</div>', unsafe_allow_html=True)
 st.markdown('<div class="neon-bar"></div>', unsafe_allow_html=True)
 
 # 4. Pengaturan API Key (Sidebar)
