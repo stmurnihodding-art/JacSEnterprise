@@ -3,6 +3,8 @@ from google import genai
 from google.genai import types
 import io
 import time
+import urllib.parse
+import urllib.request
 import docx
 from fpdf import FPDF
 
@@ -159,15 +161,15 @@ if "ref_img_preview" not in st.session_state:
 if "active_module_name" not in st.session_state:
     st.session_state.active_module_name = "Character Gen"
 
-# Helper Aspek Rasio
-def map_aspect_ratio(raw_ratio_str):
+# Helper Dimensi Aspek Rasio
+def get_dimensions(raw_ratio_str):
     if "9:16" in raw_ratio_str:
-        return "9:16"
+        return 720, 1280, "9:16"
     elif "16:9" in raw_ratio_str or "21:9" in raw_ratio_str:
-        return "16:9"
+        return 1280, 720, "16:9"
     elif "4:5" in raw_ratio_str or "3:4" in raw_ratio_str:
-        return "4:3" if "3:4" in raw_ratio_str else "1:1"
-    return "1:1"
+        return 800, 1000, "4:3"
+    return 1024, 1024, "1:1"
 
 # Generator Unduhan Berkas
 def generate_docx(content_text, title="Naskah Produksi AI Studio"):
@@ -395,7 +397,7 @@ if active_trigger:
 
             if btn_m1:
                 st.session_state.active_module_name = f"Modul 1: Karakter {m1_name}"
-                target_ratio = map_aspect_ratio(m1_ratio)
+                w_px, h_px, target_ratio = get_dimensions(m1_ratio)
                 img_prompt = f"Cinematic studio character portrait of {m1_name}, {m1_details}, visual style: {m1_style}, ultra detailed facial features, realistic skin texture, 8k resolution, identity preserved"
                 sys_inst = "Anda adalah Master Director & Pakar Prompt Karakter Konsisten. Rinci profil identitas karakter, formula prompt konsisten (Image-to-Image & Text-to-Video), serta seed guidelines."
                 analysis_prompt = f"Kunci profil karakter {m1_name} dengan gaya {m1_style}. Rasio: {m1_ratio}. Rincikan formula prompt konsisten lintas adegan dan panduan pose."
@@ -403,7 +405,7 @@ if active_trigger:
 
             elif btn_m2:
                 st.session_state.active_module_name = f"Modul 2: Branding {m2_brand}"
-                target_ratio = map_aspect_ratio(m2_ratio)
+                w_px, h_px, target_ratio = get_dimensions(m2_ratio)
                 img_prompt = f"High-end commercial advertisement for {m2_brand}, {m2_desc}, aesthetic atmosphere: {m2_vibe}, studio lighting, clean composition, luxury product photography, 8k"
                 sys_inst = "Anda adalah Creative Advertising Director. Buat panduan eksekusi kampanye, penempatan logo/mockup tanpa distorsi, serta salinan copywriting iklan media sosial viral."
                 analysis_prompt = f"Susun kampanye iklan untuk brand {m2_brand}. Suasana: {m2_vibe}, Format: {m2_ratio}. Sertakan arahan penempatan logo, headline, caption medsos, dan prompt video iklan 15 detik."
@@ -411,7 +413,7 @@ if active_trigger:
 
             elif btn_m3:
                 st.session_state.active_module_name = f"Modul 3: Kuliner {m3_dish}"
-                target_ratio = map_aspect_ratio(m3_ratio)
+                w_px, h_px, target_ratio = get_dimensions(m3_ratio)
                 img_prompt = f"Commercial food photography of {m3_dish}, camera angle: {m3_angle}, {m3_details}, soft studio lighting, glistening appetizing textures, shallow depth of field, 8k resolution"
                 sys_inst = "Anda adalah Food Stylist & Fotografer Kuliner Komersial Kelas Dunia. Buat deskripsi menu, narasi selera, serta formula prompt fotografi makro."
                 analysis_prompt = f"Rancang panduan visual dan narasi marketing untuk menu kuliner: {m3_dish}. Sudut kamera: {m3_angle}. Format: {m3_ratio}. Rincikan highlight uap, tekstur gurih, dan copywriting menggugah selera."
@@ -419,7 +421,7 @@ if active_trigger:
 
             else:
                 st.session_state.active_module_name = f"Modul 4: Film Engine ({m4_char})"
-                target_ratio = map_aspect_ratio(m4_ratio)
+                w_px, h_px, target_ratio = get_dimensions(m4_ratio)
                 img_prompt = f"Cinematic keyframe scene 1 for film, featuring {m4_char}, premise: {m4_premise}, mood genre: {m4_genre}, volumetric lighting, 24fps film aesthetic, master shot"
                 sys_inst = "Anda adalah Sutradara & Showrunner Serial Profesional. Lakukan script breakdown per adegan (Scene 1-4), naskah dialog TTS, instruksi kamera, serta prompt siap pakai untuk AI Video (Runway Gen-3 / Kling)."
                 analysis_prompt = f"Pecah premis ini menjadi naskah 3-4 adegan: {m4_premise}. Karakter: {m4_char}. Genre: {m4_genre}. Format Video: {m4_ratio}. Format output: Scene, Visual Frame, Voiceover/Dialog TTS, BGM/SFX, dan English Prompt siap salin untuk Kling/Luma."
@@ -439,27 +441,14 @@ if active_trigger:
                     elif f.name.lower().endswith('.txt'):
                         payload.append("\n--- DOKUMEN ACUAN ---\n" + fb.decode('utf-8', errors='ignore'))
 
-            with st.spinner("⚡ Engine sedang memproses 5 lapis Gemini dan menyusun rencana produksi..."):
-                # A. Penanganan Aman Render Gambar (Imagen)
-                try:
-                    img_res = client.models.generate_images(
-                        model='imagen-3.0-generate-002',
-                        prompt=img_prompt,
-                        config=types.GenerateImagesConfig(number_of_images=1, aspect_ratio=target_ratio)
-                    )
-                    if img_res and hasattr(img_res, 'generated_images'):
-                        for g in img_res.generated_images:
-                            st.session_state.res_img = g.image.image_bytes
-                except Exception:
-                    pass
-
-                # B. Eksekusi Naskah dengan 5 Lapis Model Gemini Aktif (Dari Terkecil ke Terbarukan)
+            with st.spinner("⚡ Engine sedang memproses teks dan merender visual langsung..."):
+                # A. Eksekusi Naskah dengan 5 Lapis Model Gemini Aktif
                 candidate_models = [
-                    "gemini-1.5-flash-8b",  # 1. Paling ringan & hemat
-                    "gemini-1.5-flash",     # 2. Standar stabil
-                    "gemini-1.5-pro",       # 3. Penalaran mendalam
-                    "gemini-2.0-flash",     # 4. Multimodal v2.0
-                    "gemini-3.6-flash"      # 5. Generasi terbarukan
+                    "gemini-1.5-flash-8b",
+                    "gemini-1.5-flash",
+                    "gemini-1.5-pro",
+                    "gemini-2.0-flash",
+                    "gemini-3.6-flash"
                 ]
 
                 success = False
@@ -482,7 +471,28 @@ if active_trigger:
                         continue
 
                 if not success:
-                    st.error(f"⚠️ Seluruh 5 jalur model Gemini sedang sibuk. Silakan coba kembali: {last_error_msg}")
+                    st.error(f"⚠️ Seluruh 5 jalur model Gemini sedang sibuk: {last_error_msg}")
+
+                # B. Render Visual Otomatis (Imagen 3 dengan Fallback Mesin Visual Instan)
+                try:
+                    img_res = client.models.generate_images(
+                        model='imagen-3.0-generate-002',
+                        prompt=img_prompt,
+                        config=types.GenerateImagesConfig(number_of_images=1, aspect_ratio=target_ratio)
+                    )
+                    if img_res and hasattr(img_res, 'generated_images'):
+                        for g in img_res.generated_images:
+                            st.session_state.res_img = g.image.image_bytes
+                except Exception:
+                    # Fallback ke Mesin Visual Instan beresolusi tinggi langsung via query prompt
+                    try:
+                        encoded_prompt = urllib.parse.quote(img_prompt)
+                        poll_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={w_px}&height={h_px}&nologo=true"
+                        req = urllib.request.Request(poll_url, headers={'User-Agent': 'Mozilla/5.0'})
+                        with urllib.request.urlopen(req, timeout=15) as resp:
+                            st.session_state.res_img = resp.read()
+                    except Exception:
+                        pass
 
         except Exception as e:
             st.error(f"Gagal memproses alur kerja: {e}")
@@ -528,12 +538,10 @@ if st.session_state.res_img or st.session_state.res_text:
             )
 
     st.write("")
-    pv1, pv2, pv3 = st.tabs(["📱 Storyboard / Naskah Adegan", "🖼️ Preview Visual", "✏️ Edit Naskah"])
+    # Tab Urutan Baru: Gambar ditaruh di tab pertama agar langsung terlihat
+    pv1, pv2, pv3 = st.tabs(["🖼️ Preview Visual Langsung", "📱 Storyboard / Naskah Adegan", "✏️ Edit Naskah"])
 
     with pv1:
-        st.markdown(st.session_state.res_text)
-
-    with pv2:
         if st.session_state.res_img:
             cv1, cv2 = st.columns([1.8, 1.2], gap="medium")
             with cv1:
@@ -549,7 +557,10 @@ if st.session_state.res_img or st.session_state.res_text:
                     use_container_width=True
                 )
         else:
-            st.info("ℹ️ Panduan produksi, sudut kamera, dan formula prompt visual teknis untuk generator video (Kling/Runway) tersedia lengkap di tab Storyboard.")
+            st.info("ℹ️ Sedang menyiapkan visual atau visual tidak dapat diakses.")
+
+    with pv2:
+        st.markdown(st.session_state.res_text)
 
     with pv3:
         st.caption("Ubah prompt atau dialog naskah di bawah ini sebelum mengunduh:")
