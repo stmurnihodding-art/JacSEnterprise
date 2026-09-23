@@ -158,7 +158,7 @@ if "ref_img_preview" not in st.session_state:
 if "active_module_name" not in st.session_state:
     st.session_state.active_module_name = "Character Gen"
 
-# Helper Aspek Rasio Aman untuk Imagen 3
+# Helper Aspek Rasio
 def map_aspect_ratio(raw_ratio_str):
     if "9:16" in raw_ratio_str:
         return "9:16"
@@ -193,7 +193,7 @@ def generate_pdf(content_text, title="Naskah Produksi AI Studio"):
             pdf.ln(1)
     return bytes(pdf.output())
 
-# 5. Tab Pemilihan Modul dengan Fitur Lengkap
+# 5. Tab Pemilihan Modul
 tab_m1, tab_m2, tab_m3, tab_m4 = st.tabs([
     "👤 Karakter Konsisten",
     "🏷️ Branding & Mockup",
@@ -301,7 +301,7 @@ with tab_m3:
     with st.container(border=True):
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
-            m3_dish = st.text_input("Nama Hidangan / Minuman:", value="Nasi Rawon Daging Sapi Premium", key="m3_dish_in")
+            m3_dish = st.text_input("Nama Hidangan / Minuman:", value="Coto makasssar legendaris", key="m3_dish_in")
         with col_f2:
             m3_angle = st.selectbox(
                 "Sudut Kamera (Angle):",
@@ -319,9 +319,9 @@ with tab_m3:
             m3_ratio = st.selectbox(
                 "Rasio Foto:",
                 [
+                    "9:16 (Story / Reels / TikTok F&B)",
                     "1:1 (Katalog Menu / Feed IG)",
                     "4:5 (Portrait Feed Instagram)",
-                    "9:16 (Story / Reels / TikTok F&B)",
                     "16:9 (Website Header / Banner Resto)"
                 ],
                 key="m3_r"
@@ -329,8 +329,8 @@ with tab_m3:
 
         m3_details = st.text_area(
             "Detail Visual (Uap Panas, Garnish, Piring & Meja):",
-            "Kuah hitam pekat berkilau gurih, potongan daging empuk beruap panas, taburan tauge renyah, piring tembikar rustic meja kayu.",
-            height=70,
+            "Semangkuk Coto Makassar autentik disajikan dalam mangkuk tanah liat tradisional rustic. Kuah kental berwarna cokelat tua gurih beraroma rempah pekat dengan kilau minyak kaldu alami di permukaan dan uap panas mengepul tipis. Potongan daging sapi empuk dan jeroan tertata padat, ditaburi irisan daun bawang segar, seledri cincang halus, serta bawang goreng renyah keemasan di atasnya. Di samping mangkuk terdapat separuh potongan jeruk nipis segar berbulir berkilau, sesendok sambal tauco merah pedas, dan ketupat anyaman daun kelapa yang terbelah rapi di atas tatakan meja kayu jati bernuansa hangat dengan pencahayaan studio komersial lembut.",
+            height=85,
             key="m3_details_in"
         )
         m3_sample = st.file_uploader("📎 Unggah Foto Referensi Hidangan (Opsional):", type=["png", "jpg", "webp"], key="m3_up")
@@ -424,7 +424,7 @@ if active_trigger:
                 analysis_prompt = f"Pecah premis ini menjadi naskah 3-4 adegan: {m4_premise}. Karakter: {m4_char}. Genre: {m4_genre}. Format Video: {m4_ratio}. Format output: Scene, Visual Frame, Voiceover/Dialog TTS, BGM/SFX, dan English Prompt siap salin untuk Kling/Luma."
                 active_files = [m4_ref_doc] if m4_ref_doc else []
 
-            # Siapkan Payload
+            # Siapkan Payload Analisis
             payload = [analysis_prompt]
             for f in active_files:
                 if f is not None:
@@ -438,27 +438,50 @@ if active_trigger:
                     elif f.name.lower().endswith('.txt'):
                         payload.append("\n--- DOKUMEN ACUAN ---\n" + fb.decode('utf-8', errors='ignore'))
 
-            with st.spinner("⚡ Engine sedang merender visual keyframe dan menyusun rencana produksi..."):
-                # Render Gambar
+            with st.spinner("⚡ Engine sedang memproses 5 lapis Gemini dan menyusun rencana produksi..."):
+                # A. Penanganan Aman Render Gambar (Imagen)
                 try:
                     img_res = client.models.generate_images(
                         model='imagen-3.0-generate-002',
                         prompt=img_prompt,
                         config=types.GenerateImagesConfig(number_of_images=1, aspect_ratio=target_ratio)
                     )
-                    for g in img_res.generated_images:
-                        st.session_state.res_img = g.image.image_bytes
-                except Exception as img_err:
-                    st.warning(f"Catatan visual render: {img_err}")
+                    if img_res and hasattr(img_res, 'generated_images'):
+                        for g in img_res.generated_images:
+                            st.session_state.res_img = g.image.image_bytes
+                except Exception:
+                    # Dilewati tanpa memicu crash jika mode Developer API aktif
+                    pass
 
-                # Render Naskah & Panduan
-                txt_res = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=payload,
-                    config={"system_instruction": sys_inst}
-                )
-                if txt_res and txt_res.text:
-                    st.session_state.res_text = txt_res.text
+                # B. Eksekusi Naskah dengan 5 Lapis Model Gemini (Dari Terkecil ke Terbarukan)
+                candidate_models = [
+                    "gemini-1.5-flash-8b",  # 1. Terkecil & paling hemat
+                    "gemini-1.5-flash",     # 2. Standar stabil
+                    "gemini-1.5-pro",       # 3. Penalaran mendalam v1.5
+                    "gemini-2.0-flash",     # 4. Generasi v2.0
+                    "gemini-3.6-flash"      # 5. Generasi terbarukan
+                ]
+
+                success = False
+                last_error_msg = ""
+
+                for model_name in candidate_models:
+                    try:
+                        txt_res = client.models.generate_content(
+                            model=model_name,
+                            contents=payload,
+                            config={"system_instruction": sys_inst}
+                        )
+                        if txt_res and txt_res.text:
+                            st.session_state.res_text = txt_res.text
+                            success = True
+                            break
+                    except Exception as err_layer:
+                        last_error_msg = str(err_layer)
+                        continue
+
+                if not success:
+                    st.error(f"⚠️ Seluruh 5 jalur model Gemini gagal merespons: {last_error_msg}")
 
         except Exception as e:
             st.error(f"Gagal memproses alur kerja: {e}")
@@ -504,9 +527,12 @@ if st.session_state.res_img or st.session_state.res_text:
             )
 
     st.write("")
-    pv1, pv2, pv3 = st.tabs(["🖼️ Preview Visual", "📱 Storyboard / Naskah Adegan", "✏️ Edit Naskah"])
+    pv1, pv2, pv3 = st.tabs(["📱 Storyboard / Naskah Adegan", "🖼️ Preview Visual", "✏️ Edit Naskah"])
 
     with pv1:
+        st.markdown(st.session_state.res_text)
+
+    with pv2:
         if st.session_state.res_img:
             cv1, cv2 = st.columns([1.8, 1.2], gap="medium")
             with cv1:
@@ -522,10 +548,7 @@ if st.session_state.res_img or st.session_state.res_text:
                     use_container_width=True
                 )
         else:
-            st.info("Visual render tidak diminta atau sedang disiapkan.")
-
-    with pv2:
-        st.markdown(st.session_state.res_text)
+            st.info("ℹ️ Panduan produksi, sudut kamera, dan formula prompt visual teknis untuk generator video (Kling/Runway) tersedia lengkap di tab Storyboard.")
 
     with pv3:
         st.caption("Ubah prompt atau dialog naskah di bawah ini sebelum mengunduh:")
